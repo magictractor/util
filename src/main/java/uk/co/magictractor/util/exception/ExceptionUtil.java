@@ -3,7 +3,6 @@ package uk.co.magictractor.util.exception;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.concurrent.Callable;
 
 // Copied from Spew project.
 public final class ExceptionUtil {
@@ -15,14 +14,14 @@ public final class ExceptionUtil {
         return new UnsupportedOperationException("Not yet implemented");
     }
 
-    public static <E extends Exception> void call(RunnableWithException<E> runnable) {
+    public static <E extends Exception> void call(RunnableWithThrowable runnable) {
         call(() -> {
             runnable.run();
             return null;
         });
     }
 
-    public static <T> T call(Callable<T> callable) {
+    public static <VALUE> VALUE call(CallableWithThrowable<VALUE> callable) {
         try {
             return callable.call();
         }
@@ -31,6 +30,12 @@ public final class ExceptionUtil {
         }
         catch (Exception e) {
             throw asRuntimeException(e);
+        }
+        catch (Error e) {
+            throw e;
+        }
+        catch (Throwable e) {
+            throw new IllegalStateException("Throwable is not an Exception or Error", e);
         }
     }
 
@@ -61,8 +66,13 @@ public final class ExceptionUtil {
     }
 
     @FunctionalInterface
-    public interface RunnableWithException<E extends Exception> {
-        void run() throws E;
+    public interface RunnableWithThrowable {
+        void run() throws Throwable;
+    }
+
+    @FunctionalInterface
+    public interface CallableWithThrowable<VALUE> {
+        VALUE call() throws Throwable;
     }
 
     @FunctionalInterface
