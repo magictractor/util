@@ -59,8 +59,11 @@ test {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    // sourceCompatibility = JavaVersion.VERSION_1_8
+    // targetCompatibility = JavaVersion.VERSION_1_8
+    // TODO! revisit versions. Java 8 was intended but bumped up when importing JSON code.
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
     
     withSourcesJar()
     //withJavadocJar()
@@ -77,7 +80,21 @@ clean {
 // "libs.xxx" refers to libraries configured in version catalog in settings.gradle.
 dependencies {
     
-    /** This project should have no dependencies other than testing libraries. */
+    /**
+        This project should have minimal dependencies other than testing libraries. 
+        Dependencies have compileOnly scope because some util packages will not 
+        require the dependency.
+     */
+    
+    // Joiners and Splitters are used by util.converters.
+    compileOnly libs.guava
+    
+    // For util.json
+    // TODO! add to settings.gradle? Unless we use older versions here...
+    // TODO! this would mean JDK > 8, at least for now...
+    compileOnly("com.jayway.jsonpath:json-path:3.0.0")
+    compileOnly("com.google.code.gson:gson:2.13.2")
+    compileOnly("com.fasterxml.jackson.core:jackson-databind:2.21.2")
     
     testImplementation libs.junit.jupiter;
     testRuntimeOnly libs.junit.jupiter.platform;
