@@ -74,6 +74,10 @@ public class JsonReader {
         return read("$", elementType);
     }
 
+    public <E> List<E> rootList(Class<? extends E> elementType) {
+        return readList("$", elementType);
+    }
+
     public <E> E read(String jsonPath, Class<? extends E> elementType) {
         checkConcrete(elementType);
         return ctx.read(jsonPath, elementType);
