@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
@@ -63,7 +64,7 @@ public abstract class AbstractMultiPartStringConverter<PART, PART_CONVERTER exte
 
     @Override
     public String reverse(TO to) {
-        return getPartJoiner().join(to.stream().map(partConverter::reverse).toList());
+        return getPartJoiner().join(to.stream().map(partConverter::reverse).collect(Collectors.toList()));
     }
 
     private Splitter getPartSplitter() {

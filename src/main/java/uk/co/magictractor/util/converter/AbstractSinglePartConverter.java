@@ -17,6 +17,7 @@ package uk.co.magictractor.util.converter;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -47,7 +48,7 @@ public abstract class AbstractSinglePartConverter<FROM, TO, CONVERTER extends Ab
         CONVERTER copy = CopyUtil.deepCopy((CONVERTER) this);
         AbstractSinglePartConverter<FROM, TO, CONVERTER> bCopy = copy;
 
-        bCopy.toNull = List.of(toNulls);
+        bCopy.toNull = Arrays.asList(toNulls);
 
         return copy;
     }
