@@ -15,78 +15,83 @@
  */
 package uk.co.magictractor.util.converter;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Function;
-
-import uk.co.magictractor.util.copy.CopyUtil;
 
 /**
  *
  */
-// Serializable is used to allow copies of the converters to be created and modified.
 public abstract class AbstractSinglePartConverter<FROM, TO, CONVERTER extends AbstractSinglePartConverter<FROM, TO, CONVERTER>>
-        implements Converter<FROM, TO>, Serializable {
+        extends AbstractConverter<FROM, TO, CONVERTER> {
 
     private static final long serialVersionUID = 1L;
 
     // TODO! sufficiently big after heroic gems to convert this to a Map
-    private final List<FROM> fromValues = new ArrayList<>();
-    private final List<TO> toValues = new ArrayList<>();
+    private final List<FROM> fromValues;
+    private final List<TO> toValues;
     private List<FROM> toNull = Collections.emptyList();
 
+    protected AbstractSinglePartConverter(List<FROM> fromValues, List<TO> toValues) {
+        if (fromValues.size() != toValues.size()) {
+            throw new IllegalArgumentException(
+                "Mismatched values, fromValue.size()=" + fromValues.size()
+                        + " and toValues.size()=" + toValues.size());
+        }
+
+        this.fromValues = fromValues;
+        this.toValues = toValues;
+    }
+
+    protected AbstractSinglePartConverter() {
+        this.fromValues = new ArrayList<>();
+        this.toValues = new ArrayList<>();
+        // No initialised values so do not lock.
+    }
+
     public CONVERTER mapToNull(FROM... toNulls) {
+        checkUnlocked();
+
         if (!toNull.isEmpty()) {
             throw new IllegalStateException("mapToNull() has already been called. It should be called once, but may be passed multiple values to convert to null.");
         }
 
-        CONVERTER copy = CopyUtil.deepCopy((CONVERTER) this);
-        AbstractSinglePartConverter<FROM, TO, CONVERTER> bCopy = copy;
+        this.toNull = Arrays.asList(toNulls);
 
-        bCopy.toNull = Arrays.asList(toNulls);
-
-        return copy;
+        return (CONVERTER) this;
     }
 
     public CONVERTER mapFrom(Function<FROM, FROM> fromMapper) {
-        CONVERTER copy = CopyUtil.deepCopy((CONVERTER) this);
-        AbstractSinglePartConverter<FROM, TO, CONVERTER> bCopy = copy;
+        checkUnlocked();
 
         for (int i = 0; i < fromValues.size(); i++) {
-            bCopy.fromValues.set(i, fromMapper.apply(fromValues.get(i)));
+            fromValues.set(i, fromMapper.apply(fromValues.get(i)));
         }
-        checkUnique(bCopy.fromValues);
+        checkUnique(fromValues);
 
-        return copy;
+        return (CONVERTER) this;
     }
 
     public CONVERTER replaceMapping(FROM newFrom, TO existingTo) {
-        CONVERTER copy = CopyUtil.deepCopy((CONVERTER) this);
-        AbstractSinglePartConverter<FROM, TO, CONVERTER> bCopy = copy;
+        checkUnlocked();
 
-        int index = bCopy.toValues.indexOf(existingTo);
+        int index = toValues.indexOf(existingTo);
         if (index == -1) {
             throw new IllegalArgumentException("No existing mapping to value: " + existingTo);
         }
-        bCopy.fromValues.set(index, newFrom);
-        checkUnique(bCopy.fromValues);
+        fromValues.set(index, newFrom);
+        checkUnique(fromValues);
 
-        return copy;
+        return (CONVERTER) this;
     }
 
-    private <T> void checkUnique(List<T> values) {
-        Set<T> uniqueValues = new HashSet<>(values);
-        if (values.size() != uniqueValues.size()) {
-            throw new IllegalArgumentException("Mapped values are not unique");
-        }
-    }
-
+    // Can use new constructors in most (all?) cases instead of this
+    @Deprecated
     protected void add(FROM fromValue, TO toValue) {
+        checkUnlocked();
+
         if (fromValues.contains(fromValue)) {
             throw new IllegalArgumentException("Already have a mapping from value " + fromValue);
         }
@@ -104,6 +109,8 @@ public abstract class AbstractSinglePartConverter<FROM, TO, CONVERTER extends Ab
 
     @Override
     public TO convert(FROM from) {
+        lock();
+
         int index = fromValues.indexOf(from);
         if (index == -1) {
             if (toNull.contains(from)) {
@@ -111,7 +118,7 @@ public abstract class AbstractSinglePartConverter<FROM, TO, CONVERTER extends Ab
             }
             throw new IllegalArgumentException(
                 "Unable to convert to type " + toType().getSimpleName()
-                        + " from value: " + from + ", expected values are " + fromValues);
+                        + " from value " + from + ", expected values are " + fromValues);
         }
 
         return toValues.get(index);
@@ -121,8 +128,14 @@ public abstract class AbstractSinglePartConverter<FROM, TO, CONVERTER extends Ab
         return toValues.get(0).getClass();
     }
 
+    public List<FROM> fromValues() {
+        return fromValues;
+    }
+
     @Override
     public FROM reverse(TO to) {
+        lock();
+
         int index = toValues.indexOf(to);
         if (index == -1) {
             if (to == null) {

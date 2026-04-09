@@ -15,7 +15,6 @@
  */
 package uk.co.magictractor.util.converter;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -25,25 +24,25 @@ import java.util.stream.Collectors;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 
-import uk.co.magictractor.util.copy.CopyUtil;
-
 /**
  * Base converter for types based on a collection of other types, such as
  * Colours (list of Colour).
  */
-public abstract class AbstractMultiPartStringConverter<PART, PART_CONVERTER extends AbstractStringConverter<PART, PART_CONVERTER>, TO extends Collection<PART>, CONVERTER extends AbstractMultiPartStringConverter<PART, PART_CONVERTER, TO, CONVERTER>>
-        implements Converter<String, TO>, Serializable {
+//public abstract class AbstractMultiPartStringConverter<PART, PART_CONVERTER extends AbstractStringConverter<PART, PART_CONVERTER>, TO extends Collection<PART>, CONVERTER extends AbstractMultiPartStringConverter<PART, PART_CONVERTER, TO, CONVERTER>>
+//extends AbstractConverter<String, TO, CONVERTER> {
+public abstract class AbstractMultiPartStringConverter<PART, TO extends Collection<PART>, CONVERTER extends AbstractMultiPartStringConverter<PART, TO, CONVERTER>>
+        extends AbstractConverter<String, TO, CONVERTER> {
 
     private static final long serialVersionUID = 1L;
 
-    private PART_CONVERTER partConverter;
+    private Converter<String, PART> partConverter;
     private String separator = ",";
     private boolean trim = true;
 
     private transient Splitter partSplitter;
     private transient Joiner partJoiner;
 
-    protected AbstractMultiPartStringConverter(PART_CONVERTER partConverter) {
+    protected AbstractMultiPartStringConverter(Converter<String, PART> partConverter) {
         this.partConverter = partConverter;
     }
 
@@ -86,31 +85,40 @@ public abstract class AbstractMultiPartStringConverter<PART, PART_CONVERTER exte
 
     @SuppressWarnings("unchecked")
     public CONVERTER separator(String separator) {
-        return (CONVERTER) CopyUtil.deepCopyAndModify(this, copy -> copy.separator = separator);
+        checkUnlocked();
+        this.separator = separator;
+
+        return (CONVERTER) this;
     }
 
     @SuppressWarnings("unchecked")
     public CONVERTER trimParts(boolean trimParts) {
-        return (CONVERTER) CopyUtil.deepCopyAndModify(this, copy -> copy.trim = trimParts);
+        checkUnlocked();
+        this.trim = trimParts;
+
+        return (CONVERTER) this;
     }
 
-    @SuppressWarnings("unchecked")
-    public CONVERTER fromCamelCase() {
-        return (CONVERTER) CopyUtil.deepCopyAndModify(this,
-            copy -> copy.setPartConverter(partConverter.fromCamelCase()));
-    }
+    //    @SuppressWarnings("unchecked")
+    //    public CONVERTER fromCamelCase() {
+    //        setPartConverter(partConverter.copy().fromCamelCase());
+    //
+    //        return (CONVERTER) this;
+    //    }
 
-    @SuppressWarnings("unchecked")
-    public CONVERTER fromUpperCase() {
-        return (CONVERTER) CopyUtil.deepCopyAndModify(this,
-            copy -> copy.setPartConverter(partConverter.fromUpperCase()));
-    }
+    //    @SuppressWarnings("unchecked")
+    //    public CONVERTER fromUpperCase() {
+    //        setPartConverter(partConverter.copy().fromUpperCase());
+    //
+    //        return (CONVERTER) this;
+    //    }
 
-    @SuppressWarnings("unchecked")
-    public CONVERTER fromLowerCase() {
-        return (CONVERTER) CopyUtil.deepCopyAndModify(this,
-            copy -> copy.setPartConverter(partConverter.fromLowerCase()));
-    }
+    //    @SuppressWarnings("unchecked")
+    //    public CONVERTER fromLowerCase() {
+    //        setPartConverter(partConverter.copy().fromLowerCase());
+    //
+    //        return (CONVERTER) this;
+    //    }
 
     //    private void setSeparator(String separator) {
     //        partSplitter = Splitter.on(separator);
@@ -120,8 +128,9 @@ public abstract class AbstractMultiPartStringConverter<PART, PART_CONVERTER exte
     //        partJoiner = Joiner.on(separator);
     //    }
 
-    private void setPartConverter(PART_CONVERTER partConverter) {
-        this.partConverter = partConverter;
-    }
+    //    private void setPartConverter(PART_CONVERTER partConverter) {
+    //        checkUnlocked();
+    //        this.partConverter = partConverter;
+    //    }
 
 }

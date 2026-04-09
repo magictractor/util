@@ -33,6 +33,7 @@ public class StringUtil {
         return HEX_ENCODING_SEP.encode(bytes, offset, length);
     }
 
+    // No longer used, consider binning it.
     // Apache Commons has WordUtils
     public static String toCamelCase(String string) {
         int len = string.length();

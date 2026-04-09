@@ -1,5 +1,5 @@
 /**
- * Copyright 2019 Ken Dobson
+ * Copyright 2026 Ken Dobson
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,30 +15,25 @@
  */
 package uk.co.magictractor.util.converter;
 
-import java.util.Map;
+import java.util.function.Function;
 
 /**
  *
  */
-public abstract class StringEnumConverter<TO extends Enum<TO>, CONVERTER extends StringEnumConverter<TO, CONVERTER>>
-        extends AbstractStringConverter<TO, CONVERTER> {
+public class StringEnumConverter<TO extends Enum<TO>> extends AbstractStringEnumConverter<TO, StringEnumConverter<TO>> {
 
     private static final long serialVersionUID = 1L;
 
-    protected StringEnumConverter(TO... enumValues) {
-        for (TO enumValue : enumValues) {
-            add(enumValue.name(), enumValue);
-        }
+    public StringEnumConverter(Class<TO> enumType) {
+        super(enumType);
     }
 
-    protected StringEnumConverter(Map<String, TO> map) {
-        for (Map.Entry<String, TO> entry : map.entrySet()) {
-            add(entry.getKey(), entry.getValue());
-        }
+    public StringEnumConverter(Class<TO> enumType, String... fromValues) {
+        super(enumType, fromValues);
     }
 
-    public CONVERTER fromFirstChar() {
-        return mapFrom(s -> s.substring(0, 1));
+    public StringEnumConverter(Class<TO> enumType, Function<String, String> fromMapper) {
+        super(enumType, fromMapper);
     }
 
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2019 Ken Dobson
+ * Copyright 2026 Ken Dobson
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,21 +15,9 @@
  */
 package uk.co.magictractor.util.converter;
 
-import java.util.List;
-
 /**
- *
+ * Enum for use by Converter tests.
  */
-public abstract class AbstractStringConverter<TO, CONVERTER extends AbstractStringConverter<TO, CONVERTER>>
-        extends AbstractSinglePartConverter<String, TO, CONVERTER> {
-
-    private static final long serialVersionUID = 1L;
-
-    protected AbstractStringConverter() {
-    }
-
-    protected AbstractStringConverter(List<String> fromValues, List<TO> toValues) {
-        super(fromValues, toValues);
-    }
-
+public enum PlayRgbEnum {
+    Red, Green, Blue;
 }
