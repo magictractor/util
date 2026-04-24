@@ -1,4 +1,14 @@
 rootProject.buildFileName = "${rootProject.name}.gradle"
+// Changing rootProject.name adjusts the default artifactId and still works with includeBuild() from other projects
+rootProject.name = "magictractor-${rootProject.name}"
+
+// includeBuild '../{project}' entries may be added to
+// settings.local.gradle to link to source in sibling projects
+// instead of a jar file.
+def localSettings = file('settings.local.gradle')
+if (localSettings.exists()) {
+    apply from: localSettings
+}
 
 // settings.gradle may be copied without modification across magictractor.co.uk projects,
 // so the version catalog may include libraries that are not used in this project.
