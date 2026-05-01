@@ -3,6 +3,8 @@ plugins {
     
     // https://docs.gradle.org/current/userguide/publishing_maven.html
     id 'maven-publish'
+    
+    id 'uk.co.magictractor.magictractor-project-plugin' version '0.0.1-SNAPSHOT'
 }
 
 group = 'uk.co.magictractor'
@@ -64,6 +66,11 @@ java {
     
     withSourcesJar()
     //withJavadocJar()
+}
+
+tasks.withType(JavaCompile) {
+    // Include details about deprecated code in build/reports/problems/problems-report.html
+    options.compilerArgs += ['-Xlint:deprecation']
 }
 
 tasks.withType(Jar) {

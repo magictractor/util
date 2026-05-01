@@ -1,3 +1,13 @@
+pluginManagement {
+    // Make magictractor custom plugins available.
+    // https://docs.gradle.org/current/userguide/plugins_intermediate.html#sec:types_of_plugins
+
+    // Can use "includeBuild '../gradle'" as well as or instead of this.
+    repositories {
+        mavenLocal();
+    }
+}
+
 rootProject.buildFileName = "${rootProject.name}.gradle"
 // Changing rootProject.name adjusts the default artifactId and still works with includeBuild() from other projects
 rootProject.name = "magictractor-${rootProject.name}"
