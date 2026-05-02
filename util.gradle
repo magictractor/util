@@ -1,14 +1,14 @@
 plugins {
-    id 'java-library'
+    id "java-library"
     
     // https://docs.gradle.org/current/userguide/publishing_maven.html
-    id 'maven-publish'
+    id "maven-publish"
     
-    id 'uk.co.magictractor.magictractor-project-plugin' version '0.0.1-SNAPSHOT'
+    id "uk.co.magictractor.magictractor-project-plugin" version "0.0.1-SNAPSHOT"
 }
 
-group = 'uk.co.magictractor'
-version = '0.0.1-SNAPSHOT'
+group = "uk.co.magictractor"
+version = "0.0.1-SNAPSHOT"
 
 publishing {
     publications {
@@ -17,26 +17,26 @@ publishing {
         
             pom {
                 name = "${project.name.capitalize()}"
-                description = 'Create PDFs and other documents using a builder that abstracts use of Apache FOP.'
+                description = "Create PDFs and other documents using a builder that abstracts use of Apache FOP."
                 url = "https://github.com/magictractor/${project.name}"
-                inceptionYear = '2026'
+                inceptionYear = "2026"
 
                 licenses {
                     license {
-                        name = 'Apache License, Version 2.0'
-                        url = 'http://www.apache.org/licenses/LICENSE-2.0'
+                        name = "Apache License, Version 2.0"
+                        url = "http://www.apache.org/licenses/LICENSE-2.0"
                     }
                 }
                 developers {
                     developer {
-                        id = 'kend'
-                        name = 'Ken Dobson'
-                       // email = 'me@gmail.com'
+                        id = "kend"
+                        name = "Ken Dobson"
+                       // email = "me@gmail.com"
                     }
                 }
                 scm {
-                    // connection = 'scm:git:git:github.com/magictractor/${project.name}.git'
-                    // developerConnection = 'scm:git:ssh://github.com/magictractor/${project.name}.git'
+                    // connection = "scm:git:git:github.com/magictractor/${project.name}.git"
+                    // developerConnection = "scm:git:ssh://github.com/magictractor/${project.name}.git"
                     url = "https://github.com/magictractor/${project.name}"
                 }
             }
@@ -45,7 +45,7 @@ publishing {
 
     repositories {
         //maven {
-        //    name = 'myRepo'
+        //    name = "myRepo"
         //    url = layout.buildDirectory.dir("repo")
         //}
     }
@@ -70,7 +70,7 @@ java {
 
 tasks.withType(JavaCompile) {
     // Include details about deprecated code in build/reports/problems/problems-report.html
-    options.compilerArgs += ['-Xlint:deprecation']
+    options.compilerArgs += ["-Xlint:deprecation"]
 }
 
 tasks.withType(Jar) {
@@ -84,9 +84,9 @@ clean {
 // "libs.xxx" refers to libraries configured in version catalog in settings.gradle.
 dependencies {
     // Logger API.
-    implementation libs.slf4j.api
+    implementation(libs.slf4j.api)
     // Logger implementation for unit tests.
-    runtimeOnly libs.logback.classic
+    runtimeOnly(libs.logback.classic)
 
     /**
         This project should have minimal dependencies other than testing libraries. 
@@ -95,10 +95,9 @@ dependencies {
      */
     
     // Joiners and Splitters are used by util.converters.
-    compileOnly libs.guava
+    compileOnly(libs.guava)
     
-    testImplementation libs.junit.jupiter;
-    testRuntimeOnly libs.junit.jupiter.platform;
-    testImplementation libs.assertj;
-    
+    testImplementation(libs.junit.jupiter);
+    testRuntimeOnly(libs.junit.jupiter.platform);
+    testImplementation(libs.assertj);
 }
