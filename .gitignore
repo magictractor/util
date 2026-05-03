@@ -5,4 +5,4 @@
 /.project
 /.classpath
 /jars/
-/settings.local.gradle
+/settings.project-local.gradle.kts
